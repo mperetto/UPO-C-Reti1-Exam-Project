@@ -8,6 +8,8 @@
 #include <time.h>
 #include <ctype.h>
 
+int checkMessageSyntax(const char *message, char *errorMessage);
+
 int main(int argc, char const *argv[])
 {
 	int simpleSocket = 0;
@@ -118,30 +120,12 @@ int main(int argc, char const *argv[])
 			{
 				*chrFound = '\0';
 
-				//controllo che il messaggio sia sintatticamente corretto
-				//Ogni valore deve essere separato da UNO spazio
-				int i;
-				char chrPrev = 'a';
-				for (i = 0; i < strlen(buffer) && !esci; i++)
-				{
-					if (chrPrev == buffer[i] && buffer[i] == ' ')
-					{
-						memset(buffer, '\0', sizeof(buffer));
-						strcpy(buffer, "ERR SYNTAX Errore formato messaggio errato\n");
-						write(simpleChildSocket, buffer, strlen(buffer));
-						printf("Messaggio sintatticamente Errato, spazi multipli\n");
-						esci = 1;
-					}
-					else if(buffer[i] != ' '){
-						if(!isdigit(buffer[i])){
-							memset(buffer, '\0', sizeof(buffer));
-							strcpy(buffer, "ERR DATA Errore puoi inviare solo numeri\n");
-							write(simpleChildSocket, buffer, strlen(buffer));
-							esci = 1;
-						}
-					}
-					
-					chrPrev = buffer[i];
+				char errorMessage[512];
+				if(!checkMessageSyntax(buffer, errorMessage)){
+					memset(buffer, '\0', sizeof(buffer));
+					strcpy(buffer, errorMessage);
+					write(simpleChildSocket, buffer, strlen(buffer));
+					esci = 1;
 				}
 
 				if (!esci)
@@ -188,4 +172,37 @@ int main(int argc, char const *argv[])
 
 	close(simpleSocket);
 	return 0;
+}
+
+/*
+ *	controlla se il messaggio sia sintatticamente corretto
+ *
+ * 	@param message			: messaggio da controllare.
+ * 	@param errorMessage	: messaggio di errore da restituire
+ * 
+ * 	@return							:	0 se è presente un'errore di sintassi 1 altrimenti
+*/
+int checkMessageSyntax(const char *message, char *errorMessage) {
+	int i;
+	char chrPrev = 'a';
+	for (i = 0; i < strlen(message); i++)
+	{
+		if (chrPrev == message[i] && message[i] == ' ')
+		{
+			memset(errorMessage, '\0', sizeof(errorMessage));
+			strcpy(errorMessage, "ERR SYNTAX Errore formato messaggio errato\n");
+			
+			return 0;
+		}
+		else if(message[i] != ' '){
+			if(!isdigit(message[i])){
+				memset(errorMessage, '\0', sizeof(errorMessage));
+				strcpy(errorMessage, "ERR DATA Errore puoi inviare solo numeri\n");
+				return 0;
+			}
+		}
+		
+		chrPrev = message[i];
+	}
+	return 1;
 }
