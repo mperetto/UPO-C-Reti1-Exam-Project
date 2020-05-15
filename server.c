@@ -8,7 +8,31 @@
 #include <time.h>
 #include <ctype.h>
 
+/**
+ *	controlla se il messaggio sia sintatticamente corretto
+ *
+ * 	@param message			: messaggio da controllare.
+ * 	@param errorMessage		: messaggio di errore da restituire
+ * 
+ * 	@return					:	0 se è presente un'errore di sintassi 1 altrimenti
+*/
 int checkMessageSyntax(const char *message, char *errorMessage);
+
+typedef struct linkedList{
+	int data;
+	struct linkedList *next;
+}linkedList;
+
+typedef linkedList node;
+typedef linkedList *list;
+
+/**
+ *	Aggiunge un elemento in fondo alla lista.
+ *	
+ *	@param l	:	inizio della lista
+ *	@param d	:	dato da inserire
+*/
+void insTail(list *l, int d);
 
 int main(int argc, char const *argv[])
 {
@@ -99,6 +123,9 @@ int main(int argc, char const *argv[])
 		memset(buffer, '\0', sizeof(buffer));
 		strcpy(buffer, "OK START Connessione attiva, Attendo i dati\n");
 		write(simpleChildSocket, buffer, strlen(buffer));
+		
+		list listOfNumbers = NULL;
+		int receivedNumber;
 
 		int esci = 0;//Vale 1 quando si verifica un errore in seguito la conn viene chiusa
 		while (!esci)
@@ -142,7 +169,13 @@ int main(int argc, char const *argv[])
 						while(ptr != NULL){
 							ValuesCounter++;
 							printf("Value: %s, Tot: %d\n", ptr, ValuesCounter);
+							receivedNumber = atoi(ptr);
+							insTail(&listOfNumbers, receivedNumber);
 							ptr = strtok(NULL, delim);
+						}
+						while(listOfNumbers != NULL){
+							printf("%d \n", listOfNumbers->data);
+							listOfNumbers = listOfNumbers->next;
 						}
 						if(ValuesCounter != totValues){
 							if(ValuesCounter < totValues){
@@ -158,9 +191,17 @@ int main(int argc, char const *argv[])
 							esci = 1;
 						}
 						else{
-							memset(buffer, '\0', sizeof(buffer));
-							sprintf(buffer, "OK DATA %d\n", totValues);
-							write(simpleChildSocket, buffer, strlen(buffer));
+							if(totValues != 0){
+								memset(buffer, '\0', sizeof(buffer));
+								sprintf(buffer, "OK DATA %d\n", totValues);
+								write(simpleChildSocket, buffer, strlen(buffer));
+							}
+							else{
+								memset(buffer, '\0', sizeof(buffer));
+								sprintf(buffer, "OK STATS <tot val elab> <media> <varianza>\n");
+								write(simpleChildSocket, buffer, strlen(buffer));
+							}
+						
 						}
 					}
 				}
@@ -174,14 +215,6 @@ int main(int argc, char const *argv[])
 	return 0;
 }
 
-/*
- *	controlla se il messaggio sia sintatticamente corretto
- *
- * 	@param message			: messaggio da controllare.
- * 	@param errorMessage	: messaggio di errore da restituire
- * 
- * 	@return							:	0 se è presente un'errore di sintassi 1 altrimenti
-*/
 int checkMessageSyntax(const char *message, char *errorMessage) {
 	int i;
 	char chrPrev = 'a';
@@ -205,4 +238,24 @@ int checkMessageSyntax(const char *message, char *errorMessage) {
 		chrPrev = message[i];
 	}
 	return 1;
+}
+
+void insTail(list *l, int d){
+	list p, q;
+
+	p = malloc(sizeof(node));
+
+	p->data = d;
+	p->next = NULL;
+
+	q = *l;
+
+	if(q == NULL){
+		*l = p;
+	}
+	else{
+		while(q->next != NULL)q = q->next;
+		q->next = p;
+	}
+
 }
