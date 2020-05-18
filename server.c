@@ -18,22 +18,6 @@
 */
 int checkMessageSyntax(const char *message, char *errorMessage);
 
-typedef struct linkedList{
-	int data;
-	struct linkedList *next;
-}linkedList;
-
-typedef linkedList node;
-typedef linkedList *list;
-
-/**
- *	Aggiunge un elemento in fondo alla lista.
- *	
- *	@param l	:	inizio della lista
- *	@param d	:	dato da inserire
-*/
-void insTail(list *l, int d);
-
 int main(int argc, char const *argv[])
 {
 	int simpleSocket = 0;
@@ -124,7 +108,6 @@ int main(int argc, char const *argv[])
 		strcpy(buffer, "OK START Connessione attiva, Attendo i dati\n");
 		write(simpleChildSocket, buffer, strlen(buffer));
 		
-		list listOfNumbers = NULL;
 		int receivedNumber;
 
 		int esci = 0;//Vale 1 quando si verifica un errore in seguito la conn viene chiusa
@@ -170,13 +153,10 @@ int main(int argc, char const *argv[])
 							ValuesCounter++;
 							printf("Value: %s, Tot: %d\n", ptr, ValuesCounter);
 							receivedNumber = atoi(ptr);
-							insTail(&listOfNumbers, receivedNumber);
+							
 							ptr = strtok(NULL, delim);
 						}
-						while(listOfNumbers != NULL){
-							printf("%d \n", listOfNumbers->data);
-							listOfNumbers = listOfNumbers->next;
-						}
+						
 						if(ValuesCounter != totValues){
 							if(ValuesCounter < totValues){
 								memset(buffer, '\0', sizeof(buffer));
@@ -238,24 +218,4 @@ int checkMessageSyntax(const char *message, char *errorMessage) {
 		chrPrev = message[i];
 	}
 	return 1;
-}
-
-void insTail(list *l, int d){
-	list p, q;
-
-	p = malloc(sizeof(node));
-
-	p->data = d;
-	p->next = NULL;
-
-	q = *l;
-
-	if(q == NULL){
-		*l = p;
-	}
-	else{
-		while(q->next != NULL)q = q->next;
-		q->next = p;
-	}
-
 }
