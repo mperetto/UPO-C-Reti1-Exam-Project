@@ -39,10 +39,10 @@ int main(int argc, char const *argv[])
 			"ERR DATA Numero dati fornito non corrisponde con dati trasmessi\n",
 			"ERR STATS Non posso calcolare la varianza\n"};
 
-	if (2 != argc)
+	if (argc != 2)
 	{
-
-		fprintf(stderr, "Usage: %s <port>\n", argv[0]);
+		fprintf(stderr, "Errore inserimento parametri\n");
+		fprintf(stderr, "Usare: %s <numero_porta>\n", argv[0]);
 		exit(1);
 	}
 
@@ -50,13 +50,12 @@ int main(int argc, char const *argv[])
 
 	if (simpleSocket == -1)
 	{
-
-		fprintf(stderr, "Could not create a socket!\n");
+		fprintf(stderr, "Impossibile creare il Socket\n");
 		exit(1);
 	}
 	else
 	{
-		fprintf(stderr, "Socket created!\n");
+		fprintf(stderr, "Socket creato correttamente\n");
 	}
 
 	/* retrieve the port number for listening */
@@ -74,11 +73,11 @@ int main(int argc, char const *argv[])
 
 	if (returnStatus == 0)
 	{
-		fprintf(stderr, "Bind completed!\n");
+		fprintf(stderr, "Bind completo\n");
 	}
 	else
 	{
-		fprintf(stderr, "Could not bind to address!\n");
+		fprintf(stderr, "Impossibile eseguire il Bind sull'indirizzo\n");
 		close(simpleSocket);
 		exit(1);
 	}
@@ -88,7 +87,7 @@ int main(int argc, char const *argv[])
 
 	if (returnStatus == -1)
 	{
-		fprintf(stderr, "Cannot listen on socket!\n");
+		fprintf(stderr, "Impossibile ascoltare sul socket\n");
 		close(simpleSocket);
 		exit(1);
 	}
@@ -107,7 +106,7 @@ int main(int argc, char const *argv[])
 		if (simpleChildSocket == -1)
 		{
 
-			fprintf(stderr, "Cannot accept connections!\n");
+			fprintf(stderr, "Impossibile accettare connessioni\n");
 			close(simpleSocket);
 			exit(1);
 		}
@@ -116,7 +115,7 @@ int main(int argc, char const *argv[])
 		strcpy(buffer, "OK START Connessione attiva, Attendo i dati\n");
 		write(simpleChildSocket, buffer, strlen(buffer));
 		
-		//inizializzo valori
+		/*	inizializzo i valori	*/
 		valori valClient;
 		valClient.media = 0;
 		valClient.sommaVal = 0;
@@ -153,8 +152,7 @@ int main(int argc, char const *argv[])
 					write(simpleChildSocket, buffer, strlen(buffer));
 					esci = 1;
 				}
-
-				if (!esci)
+				else
 				{
 					char *delim = " ";
 					char *ptr = strtok(buffer, delim);
@@ -172,7 +170,7 @@ int main(int argc, char const *argv[])
 							valClient.sommaVal = valClient.sommaVal + receivedNumber;
 							valClient.sommaValQuad = valClient.sommaValQuad + (receivedNumber*receivedNumber);
 							valClient.totValRicevuti++;
-							printf("somma: %d\nsommaQuad: %d\ntotRic: %d\n", valClient.sommaVal, valClient.sommaValQuad, valClient.totValRicevuti);
+							//printf("somma: %d\nsommaQuad: %d\ntotRic: %d\n", valClient.sommaVal, valClient.sommaValQuad, valClient.totValRicevuti);
 							ptr = strtok(NULL, delim);
 						}
 						
