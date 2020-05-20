@@ -196,9 +196,20 @@ int main(int argc, char const *argv[])
 								write(simpleChildSocket, buffer, strlen(buffer));
 							}
 							else{
-								memset(buffer, '\0', sizeof(buffer));
-								sprintf(buffer, "OK STATS <tot val elab> <media> <varianza>\n");
-								write(simpleChildSocket, buffer, strlen(buffer));
+								if(valClient.totValRicevuti < 2){
+									memset(buffer, '\0', sizeof(buffer));
+									sprintf(buffer, "ERR STATS Non posso calcolare la varianza con %d dato ricevuto\n", valClient.totValRicevuti);
+									write(simpleChildSocket, buffer, strlen(buffer));
+									esci = 1;
+								}
+								else{
+									memset(buffer, '\0', sizeof(buffer));
+									valClient.media = (float)valClient.sommaVal / (float)valClient.totValRicevuti;
+									valClient.varianza = ((float)valClient.sommaValQuad - ((float)valClient.totValRicevuti)*(valClient.media*valClient.media))/((float)valClient.totValRicevuti - 1);
+									sprintf(buffer, "OK STATS %d %f %f\n", valClient.totValRicevuti, valClient.media, valClient.varianza);
+									write(simpleChildSocket, buffer, strlen(buffer));
+									esci = 1;
+								}
 							}
 						
 						}
