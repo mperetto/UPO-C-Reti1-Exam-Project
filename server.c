@@ -18,6 +18,14 @@
 */
 int checkMessageSyntax(const char *message, char *errorMessage);
 
+typedef struct valori{
+	int totValRicevuti;
+	int sommaVal;
+	int sommaValQuad;
+	float media;
+	float varianza;
+}valori;
+
 int main(int argc, char const *argv[])
 {
 	int simpleSocket = 0;
@@ -108,6 +116,14 @@ int main(int argc, char const *argv[])
 		strcpy(buffer, "OK START Connessione attiva, Attendo i dati\n");
 		write(simpleChildSocket, buffer, strlen(buffer));
 		
+		//inizializzo valori
+		valori valClient;
+		valClient.media = 0;
+		valClient.sommaVal = 0;
+		valClient.sommaValQuad = 0;
+		valClient.totValRicevuti = 0;
+		valClient.varianza = 0;
+
 		int receivedNumber;
 
 		int esci = 0;//Vale 1 quando si verifica un errore in seguito la conn viene chiusa
@@ -145,15 +161,18 @@ int main(int argc, char const *argv[])
 
 					if(ptr != NULL){
 						int totValues = atoi(ptr);
-						printf("%s %d\n", ptr, totValues);
+						//printf("%s %d\n", ptr, totValues);
 						ptr = strtok(NULL, delim);
 
 						int ValuesCounter = 0;
 						while(ptr != NULL){
 							ValuesCounter++;
-							printf("Value: %s, Tot: %d\n", ptr, ValuesCounter);
+							//printf("Value: %s, Tot: %d\n", ptr, ValuesCounter);
 							receivedNumber = atoi(ptr);
-							
+							valClient.sommaVal = valClient.sommaVal + receivedNumber;
+							valClient.sommaValQuad = valClient.sommaValQuad + (receivedNumber*receivedNumber);
+							valClient.totValRicevuti++;
+							printf("somma: %d\nsommaQuad: %d\ntotRic: %d\n", valClient.sommaVal, valClient.sommaValQuad, valClient.totValRicevuti);
 							ptr = strtok(NULL, delim);
 						}
 						
