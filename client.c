@@ -6,6 +6,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <arpa/inet.h>
+#include "list-lib/list.h"
 
 /*
 	Server riferimento prof
@@ -91,13 +92,62 @@ int main(int argc, char *argv[])
 	returnStatus = read(simpleSocket, buffer, sizeof(buffer));
 
 	char server_msg[512] = "";
+	int messageType;
+	int numDaInserire;
+	int valore;
 
 	if (returnStatus > 0)
 	{
 		int esci = 0;
 		
-		decodeServerMsg(buffer, server_msg);
-		printf("%s", server_msg);
+		messageType = decodeServerMsg(buffer, server_msg);
+		if(messageType == 1){// ricevuto OK START
+			printf("Messaggio Server: %s", server_msg);
+
+			upo_List_t lista = upo_list_init();
+			printf("Il programma permette il calcolo di media e varianza effettuato sui valori inseriti.\n");
+			do{
+				
+				printf("\tInserire valore 0 per effettuare il calcolo di media e varianza sui valori precedentemente forniti.\n\n");
+				do{
+					printf("Quanti numeri vuoi inserire?: ");
+					scanf("%d", &numDaInserire);
+				}while(numDaInserire < 0);
+
+				int i;
+				for(i = 0; i < numDaInserire; i++){
+					printf("Inserire valore: ");
+					scanf("%d", &valore);
+					upo_list_add(lista, valore);
+				}
+
+				char strW[64] = "";
+				memset(buffer, 0, sizeof(buffer));
+				sprintf(buffer, "%d", numDaInserire);
+				printf("%s\n", buffer);
+
+				if(numDaInserire > 0){
+					while(upo_list_size(lista) > 0){
+						char s[64] = "";
+						sprintf(s, " %d", upo_list_remove_head(lista));
+						strcat(buffer, s);
+					}
+					strcat(buffer, "\n");
+					printf("%s\n", strW);
+					write(simpleSocket, buffer, sizeof(buffer));
+					memset(buffer, 0, sizeof(buffer));
+					returnStatus = read(simpleSocket, buffer, sizeof(buffer));
+					printf("%s\n", buffer);
+				}
+				else{
+					break;
+				}
+
+			}while(1);
+		}
+		else{
+			fprintf(stderr, "Errore di connessione con il server: %s\n", server_msg);
+		}
 		
 
 	}
@@ -137,7 +187,8 @@ int decodeServerMsg(char *serverMsg, char *serverResponse){
 	if(strstr(serverMsg, protocolMsg[0]) != NULL){// OK START
 		if(strEqual(serverMsg, protocolMsg[0], strlen(protocolMsg[0]))){
 			msgType = 1;
-			serverResponse = (serverMsg + strlen(protocolMsg[0]));
+			//serverResponse = (serverMsg + strlen(protocolMsg[0]));
+			strcpy(serverResponse, (serverMsg + strlen(protocolMsg[0])));
 			printf("%s\n", serverResponse);
 		}
 	}
