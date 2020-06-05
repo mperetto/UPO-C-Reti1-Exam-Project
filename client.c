@@ -81,24 +81,10 @@ int main(int argc, char *argv[])
 	if (returnStatus > 0)
 	{
 		int esci = 0;
-		{
-			char *str_OK = "OK START ";
-			int i;
-			for(i = 0; i < strlen(str_OK); i++){
-				if(buffer[i] != str_OK[i]){
-					esci = 1;
-					break;
-				}
-			}
-			for(; i < strlen(buffer); i++){
-				char buff_serv[2];
-				buff_serv[1] = '\0';
-				buff_serv[0] = buffer[i];
-				strcat(server_msg, buff_serv);
-			}
-			printf("%sfin\n", server_msg);
-			printf("%d\n", decodeServerMsg(buffer, ""));
-		}
+		
+		decodeServerMsg(buffer, server_msg);
+		printf("%s", server_msg);
+		
 
 	}
 	else
