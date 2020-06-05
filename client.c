@@ -136,23 +136,39 @@ int decodeServerMsg(char *serverMsg, char *serverResponse){
 		}
 	}
 	else if(strstr(serverMsg, protocolMsg[1]) != NULL){// OK DATA
-		if(strEqual(serverMsg, "OK DATA ", strlen(protocolMsg[1]))){
+		if(strEqual(serverMsg, protocolMsg[1], strlen(protocolMsg[1]))){
 			msgType = 2;
 			serverResponse = (serverMsg + strlen(protocolMsg[1]));
 			printf("%s\n", serverResponse);
 		}
 	}
 	else if(strstr(serverMsg, protocolMsg[2]) != NULL){// OK STATS
-		msgType = 3;
+		if(strEqual(serverMsg, protocolMsg[2], strlen(protocolMsg[2]))){
+			msgType = 3;
+			serverResponse = (serverMsg + strlen(protocolMsg[2]));
+			printf("%s\n", serverResponse);
+		}
 	}
 	else if(strstr(serverMsg, protocolMsg[3]) != NULL){// ERR DATA
-		msgType = 4;
+		if(strEqual(serverMsg, protocolMsg[3], strlen(protocolMsg[3]))){
+			msgType = 4;
+			serverResponse = (serverMsg + strlen(protocolMsg[3]));
+			printf("%s\n", serverResponse);
+		}
 	}
 	else if(strstr(serverMsg, protocolMsg[4]) != NULL){// ERR STATS
-		msgType = 5;
+		if(strEqual(serverMsg, protocolMsg[4], strlen(protocolMsg[4]))){
+			msgType = 5;
+			serverResponse = (serverMsg + strlen(protocolMsg[4]));
+			printf("%s\n", serverResponse);
+		}
 	}
-	else if(strstr(serverMsg, protocolMsg[6]) != NULL){// ERR SYNTAX
-		msgType = 6;
+	else if(strstr(serverMsg, protocolMsg[5]) != NULL){// ERR SYNTAX
+		if(strEqual(serverMsg, protocolMsg[5], strlen(protocolMsg[5]))){
+			msgType = 6;
+			serverResponse = (serverMsg + strlen(protocolMsg[5]));
+			printf("%s\n", serverResponse);
+		}
 	}
 	else{
 		msgType = -1;
