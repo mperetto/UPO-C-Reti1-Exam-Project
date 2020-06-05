@@ -14,6 +14,14 @@
  * @param		serverMsg					:	messaggio inviato dal server con delimitatori del protocollo.
  * @param		serverResponse		:	stringa personalizzata dal server (senza delimitatori del protocollo).
  * @return	tipologia di messaggio interpretato.
+ * 			1:	OK START
+ * 			2:	OK DATA
+ * 			3:	OK STATS
+ * 			4:	ERR DATA
+ * 			5:	ERR STATS
+ * 			6:	ERR SYNTAX
+ * 			-1:	fomato sconosciuto
+ * 
 */
 int decodeServerMsg(char *serverMsg, char *serverResponse);
 
