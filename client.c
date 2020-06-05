@@ -7,6 +7,12 @@
 #include <unistd.h>
 #include <arpa/inet.h>
 
+/*
+	Server riferimento prof
+	IP:		130.192.9.131
+	porta:	10010
+*/
+
 /**
  * Decodifica il messaggio inviato dal server, 
  * restituendo il tipo e eventualmente il messaggio personalizzato dal server.
