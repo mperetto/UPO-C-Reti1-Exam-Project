@@ -105,10 +105,10 @@ int main(int argc, char *argv[])
 			printf("Messaggio Server: %s", server_msg);
 
 			upo_List_t lista = upo_list_init();
-			printf("Il programma permette il calcolo di media e varianza effettuato sui valori inseriti.\n");
+			printf("\n>>>Il programma permette il calcolo di media e varianza effettuato sui valori inseriti.\n");
 			do{
 				
-				printf("\tInserire valore 0 per effettuare il calcolo di media e varianza sui valori precedentemente forniti.\n\n");
+				printf(">>>Inserire valore 0 per effettuare il calcolo di media e varianza sui valori precedentemente forniti.\n\n");
 				do{
 					printf("Quanti numeri vuoi inserire?: ");
 					scanf("%d", &numDaInserire);
@@ -116,15 +116,14 @@ int main(int argc, char *argv[])
 
 				int i;
 				for(i = 0; i < numDaInserire; i++){
-					printf("Inserire valore: ");
+					printf("Inserire valore %d: ", i);
 					scanf("%d", &valore);
 					upo_list_add(lista, valore);
 				}
 
-				char strW[64] = "";
 				memset(buffer, 0, sizeof(buffer));
 				sprintf(buffer, "%d", numDaInserire);
-				printf("%s\n", buffer);
+				//printf("%s\n", buffer);
 
 				if(numDaInserire > 0){
 					while(upo_list_size(lista) > 0){
@@ -133,11 +132,11 @@ int main(int argc, char *argv[])
 						strcat(buffer, s);
 					}
 					strcat(buffer, "\n");
-					printf("%s\n", strW);
-					write(simpleSocket, buffer, sizeof(buffer));
+
+					write(simpleSocket, buffer, sizeof(buffer));//invio numeri al server
 					memset(buffer, 0, sizeof(buffer));
-					returnStatus = read(simpleSocket, buffer, sizeof(buffer));
-					printf("%s\n", buffer);
+					returnStatus = read(simpleSocket, buffer, sizeof(buffer));//leggo risposta dal server
+					
 				}
 				else{
 					break;
@@ -195,35 +194,35 @@ int decodeServerMsg(char *serverMsg, char *serverResponse){
 	else if(strstr(serverMsg, protocolMsg[1]) != NULL){// OK DATA
 		if(strEqual(serverMsg, protocolMsg[1], strlen(protocolMsg[1]))){
 			msgType = 2;
-			serverResponse = (serverMsg + strlen(protocolMsg[1]));
+			strcpy(serverResponse, (serverMsg + strlen(protocolMsg[1])));
 			printf("%s\n", serverResponse);
 		}
 	}
 	else if(strstr(serverMsg, protocolMsg[2]) != NULL){// OK STATS
 		if(strEqual(serverMsg, protocolMsg[2], strlen(protocolMsg[2]))){
 			msgType = 3;
-			serverResponse = (serverMsg + strlen(protocolMsg[2]));
+			strcpy(serverResponse, (serverMsg + strlen(protocolMsg[2])));
 			printf("%s\n", serverResponse);
 		}
 	}
 	else if(strstr(serverMsg, protocolMsg[3]) != NULL){// ERR DATA
 		if(strEqual(serverMsg, protocolMsg[3], strlen(protocolMsg[3]))){
 			msgType = 4;
-			serverResponse = (serverMsg + strlen(protocolMsg[3]));
+			strcpy(serverResponse, (serverMsg + strlen(protocolMsg[3])));
 			printf("%s\n", serverResponse);
 		}
 	}
 	else if(strstr(serverMsg, protocolMsg[4]) != NULL){// ERR STATS
 		if(strEqual(serverMsg, protocolMsg[4], strlen(protocolMsg[4]))){
 			msgType = 5;
-			serverResponse = (serverMsg + strlen(protocolMsg[4]));
+			strcpy(serverResponse, (serverMsg + strlen(protocolMsg[4])));
 			printf("%s\n", serverResponse);
 		}
 	}
 	else if(strstr(serverMsg, protocolMsg[5]) != NULL){// ERR SYNTAX
 		if(strEqual(serverMsg, protocolMsg[5], strlen(protocolMsg[5]))){
 			msgType = 6;
-			serverResponse = (serverMsg + strlen(protocolMsg[5]));
+			strcpy(serverResponse, (serverMsg + strlen(protocolMsg[5])));
 			printf("%s\n", serverResponse);
 		}
 	}
