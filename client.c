@@ -123,7 +123,6 @@ int main(int argc, char *argv[])
 
 				memset(buffer, 0, sizeof(buffer));
 				sprintf(buffer, "%d", numDaInserire);
-				//printf("%s\n", buffer);
 
 				if(numDaInserire > 0){
 					while(upo_list_size(lista) > 0){
@@ -136,13 +135,22 @@ int main(int argc, char *argv[])
 					write(simpleSocket, buffer, sizeof(buffer));//invio numeri al server
 					memset(buffer, 0, sizeof(buffer));
 					returnStatus = read(simpleSocket, buffer, sizeof(buffer));//leggo risposta dal server
+					messageType = decodeServerMsg(buffer, server_msg);
+					int numRicDalServer = atoi(server_msg);
 					
-				}
-				else{
-					break;
+					if(messageType == 2 && numRicDalServer != numDaInserire){
+						printf("Ops sembra che il server abbia ricevuto un numero diverso di valori da quelli inviati.\n");
+						numDaInserire = 0;
+					}
+					else if(messageType > 3 && messageType <= 6){//Ricevuto messaggio di errore dal server
+						printf("Il server ha avuto un errore e ha terminato la connessione");
+						printf("Messaggio server: %s\n", server_msg);
+						exit(1);
+					}
 				}
 
-			}while(1);
+			}while(numDaInserire != 0);
+
 		}
 		else{
 			fprintf(stderr, "Errore di connessione con il server: %s\n", server_msg);
