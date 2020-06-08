@@ -143,13 +143,27 @@ int main(int argc, char *argv[])
 						numDaInserire = 0;
 					}
 					else if(messageType > 3 && messageType <= 6){//Ricevuto messaggio di errore dal server
-						printf("Il server ha avuto un errore e ha terminato la connessione");
+						printf("Il server ha avuto un errore e ha terminato la connessione\n");
 						printf("Messaggio server: %s\n", server_msg);
 						exit(1);
 					}
 				}
 
 			}while(numDaInserire != 0);
+			
+			strcat(buffer, "\n");
+			write(simpleSocket, buffer, sizeof(buffer));//invio al server 0
+			memset(buffer, 0, sizeof(buffer));
+			returnStatus = read(simpleSocket, buffer, sizeof(buffer));
+
+			messageType = decodeServerMsg(buffer, server_msg);
+			if(messageType == 3){
+				printf("Statistiche elaborate: %s\n", server_msg);
+			}
+			else if(messageType > 3 && messageType <= 6){//Ricevuto messaggio di errore dal server
+				printf("Il server ha avuto un errore e ha terminato la connessione\n");
+				printf("Messaggio server: %s\n", server_msg);
+			}
 
 		}
 		else{
