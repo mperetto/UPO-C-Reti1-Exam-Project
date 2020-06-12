@@ -105,10 +105,14 @@ int main(int argc, char *argv[])
 			printf("\nMessaggio Server: %s", server_msg);
 
 			upo_List_t lista = upo_list_init();
-			printf("\n>>>Il programma permette il calcolo di media e varianza effettuato sui valori inseriti.\n");
+			printf("\n>>> Il programma permette di calcolare media e varianza su un gruppo di valori inseriti. <<<\n");
+			printf(">>> I numeri verranno inviati a gruppi <<<\n");
+			printf(">>> Per prima cosa l'utente dovra' selezionare quanti numeri vuole inviare. <<<\n");
+			printf(">>> Una volta scelto il numero di valori l'utente dovra' inserire un numero alla volta <<<\n");
+			printf(">>> Per terminare l'inserimento e calcolare i risultati sara' necessario rispondere 0 alla domanda 'Quanti numeri vuoi inserire?:' <<<\n\n");
+
 			do{
 				
-				printf(">>>Inserire valore 0 per effettuare il calcolo di media e varianza sui valori precedentemente forniti.\n\n");
 				do{
 					printf("Quanti numeri vuoi inserire?(inserire 0 per ottenere i risultati): ");
 					scanf("%d", &numDaInserire);
@@ -149,7 +153,7 @@ int main(int argc, char *argv[])
 						close(simpleSocket);
 						exit(1);
 					}
-					else{
+					else if(messageType < 0){
 						printf("Ops non sono in grado di interpretare la risposta del server.\n");
 						printf("Verra' interrotta la connessione e chiuso il programma.\n");
 						close(simpleSocket);
@@ -170,7 +174,7 @@ int main(int argc, char *argv[])
 				float media;
 				float varianza;
 				sscanf(server_msg, "%d %f %f", &numCampioni, &media, &varianza);
-				printf("\n\nIl server ha elaborato i calcoli\n");
+				printf("\n\nIl server ha elaborato i valori\n");
 				printf("Risultati Ottenuti:\n\n");
 				printf("\tNumero di campioni: %d\n", numCampioni);
 				printf("\tMedia calcolata: %f\n", media);
