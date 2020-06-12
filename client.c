@@ -102,7 +102,7 @@ int main(int argc, char *argv[])
 		
 		messageType = decodeServerMsg(buffer, server_msg);
 		if(messageType == 1){// ricevuto OK START
-			printf("Messaggio Server: %s", server_msg);
+			printf("\nMessaggio Server: %s", server_msg);
 
 			upo_List_t lista = upo_list_init();
 			printf("\n>>>Il programma permette il calcolo di media e varianza effettuato sui valori inseriti.\n");
@@ -140,11 +140,19 @@ int main(int argc, char *argv[])
 					
 					if(messageType == 2 && numRicDalServer != numDaInserire){
 						printf("Ops sembra che il server abbia ricevuto un numero diverso di valori da quelli inviati.\n");
+						printf("Verra' interrotto l'inserimento dei valori e richiesto il calcolo dei risultati.\n");
 						numDaInserire = 0;
 					}
 					else if(messageType > 3 && messageType <= 6){//Ricevuto messaggio di errore dal server
-						printf("Il server ha avuto un errore e ha terminato la connessione\n");
-						printf("Messaggio server: %s\n", server_msg);
+						printf("Ops il server ha avuto un errore e ha terminato la connessione\n");
+						printf("Messaggio ricevuto dal server: %s\n", server_msg);
+						close(simpleSocket);
+						exit(1);
+					}
+					else{
+						printf("Ops non sono in grado di interpretare la risposta del server.\n");
+						printf("Verra' interrotta la connessione e chiuso il programma.\n");
+						close(simpleSocket);
 						exit(1);
 					}
 				}
