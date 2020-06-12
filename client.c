@@ -110,13 +110,13 @@ int main(int argc, char *argv[])
 				
 				printf(">>>Inserire valore 0 per effettuare il calcolo di media e varianza sui valori precedentemente forniti.\n\n");
 				do{
-					printf("Quanti numeri vuoi inserire?: ");
+					printf("Quanti numeri vuoi inserire?(inserire 0 per ottenere i risultati): ");
 					scanf("%d", &numDaInserire);
 				}while(numDaInserire < 0);
 
 				int i;
 				for(i = 0; i < numDaInserire; i++){
-					printf("Inserire valore %d: ", i);
+					printf("Inserire valore %d: ", i+1);
 					scanf("%d", &valore);
 					upo_list_add(lista, valore);
 				}
@@ -157,8 +157,16 @@ int main(int argc, char *argv[])
 			returnStatus = read(simpleSocket, buffer, sizeof(buffer));
 
 			messageType = decodeServerMsg(buffer, server_msg);
-			if(messageType == 3){
-				printf("Statistiche elaborate: %s\n", server_msg);
+			if(messageType == 3){//Ricevuto OK STATS
+				int numCampioni;
+				float media;
+				float varianza;
+				sscanf(server_msg, "%d %f %f", &numCampioni, &media, &varianza);
+				printf("\n\nIl server ha elaborato i calcoli\n");
+				printf("Risultati Ottenuti:\n\n");
+				printf("\tNumero di campioni: %d\n", numCampioni);
+				printf("\tMedia calcolata: %f\n", media);
+				printf("\tVarianza calcolata: %f\n\n", varianza);
 			}
 			else if(messageType > 3 && messageType <= 6){//Ricevuto messaggio di errore dal server
 				printf("Il server ha avuto un errore e ha terminato la connessione\n");
