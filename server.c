@@ -32,12 +32,7 @@ int main(int argc, char const *argv[])
 	int simplePort = 0;
 	int returnStatus = 0;
 	struct sockaddr_in simpleServer;
-	char buffer[512]; // <Esito> <Tipo> <Contenuto>
-
-	const char ERR_MESSAGES[3][128] = {
-			"ERR SYNTAX Formato messaggio errato, (manca ritorno a capo)\n",
-			"ERR DATA Numero dati fornito non corrisponde con dati trasmessi\n",
-			"ERR STATS Non posso calcolare la varianza\n"};
+	char buffer[512];
 
 	if (argc != 2)
 	{
@@ -99,7 +94,7 @@ int main(int argc, char const *argv[])
 		int simpleChildSocket = 0;
 		int clientNameLength = sizeof(clientName);
 
-		/* wait here */
+		/* Attesa connessioni */
 
 		simpleChildSocket = accept(simpleSocket, (struct sockaddr *)&clientName, &clientNameLength);
 
@@ -125,7 +120,7 @@ int main(int argc, char const *argv[])
 
 		int receivedNumber;
 
-		int esci = 0;//Vale 1 quando si verifica un errore in seguito la conn viene chiusa
+		int esci = 0;//Vale 1 quando si verifica un errore o viene richiesto il calcolo delle statistiche in seguito la conn viene chiusa
 		while (!esci)
 		{
 			memset(buffer, '\0', sizeof(buffer));
@@ -137,7 +132,7 @@ int main(int argc, char const *argv[])
 			if (chrFound == NULL)
 			{
 				memset(buffer, '\0', sizeof(buffer));
-				strcpy(buffer, ERR_MESSAGES[0]);
+				strcpy(buffer, "ERR SYNTAX Formato messaggio errato.\n");
 				write(simpleChildSocket, buffer, strlen(buffer));
 				esci = 1;
 			}
@@ -159,18 +154,15 @@ int main(int argc, char const *argv[])
 
 					if(ptr != NULL){
 						int totValues = atoi(ptr);
-						//printf("%s %d\n", ptr, totValues);
 						ptr = strtok(NULL, delim);
 
 						int ValuesCounter = 0;
 						while(ptr != NULL){
 							ValuesCounter++;
-							//printf("Value: %s, Tot: %d\n", ptr, ValuesCounter);
 							receivedNumber = atoi(ptr);
 							valClient.sommaVal = valClient.sommaVal + receivedNumber;
 							valClient.sommaValQuad = valClient.sommaValQuad + (receivedNumber*receivedNumber);
 							valClient.totValRicevuti++;
-							//printf("somma: %d\nsommaQuad: %d\ntotRic: %d\n", valClient.sommaVal, valClient.sommaValQuad, valClient.totValRicevuti);
 							ptr = strtok(NULL, delim);
 						}
 						
