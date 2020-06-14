@@ -28,10 +28,10 @@ typedef struct valori{
 
 int main(int argc, char const *argv[])
 {
-	int simpleSocket = 0;
-	int simplePort = 0;
+	int serverSocket = 0;
+	int socketPort = 0;
 	int returnStatus = 0;
-	struct sockaddr_in simpleServer;
+	struct sockaddr_in sockAddrServer;
 	char buffer[512];
 
 	if (argc != 2)
@@ -41,9 +41,9 @@ int main(int argc, char const *argv[])
 		exit(1);
 	}
 
-	simpleSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+	serverSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 
-	if (simpleSocket == -1)
+	if (serverSocket == -1)
 	{
 		fprintf(stderr, "Impossibile creare il Socket\n");
 		exit(1);
@@ -54,17 +54,17 @@ int main(int argc, char const *argv[])
 	}
 
 	/* retrieve the port number for listening */
-	simplePort = atoi(argv[1]);
+	socketPort = atoi(argv[1]);
 
 	/* setup the address structure */
 	/* use INADDR_ANY to bind to all local addresses  */
-	memset(&simpleServer, '\0', sizeof(simpleServer));
-	simpleServer.sin_family = AF_INET;
-	simpleServer.sin_addr.s_addr = htonl(INADDR_ANY);
-	simpleServer.sin_port = htons(simplePort);
+	memset(&sockAddrServer, '\0', sizeof(sockAddrServer));
+	sockAddrServer.sin_family = AF_INET;
+	sockAddrServer.sin_addr.s_addr = htonl(INADDR_ANY);
+	sockAddrServer.sin_port = htons(socketPort);
 
 	/*  bind to the address and port with our socket  */
-	returnStatus = bind(simpleSocket, (struct sockaddr *)&simpleServer, sizeof(simpleServer));
+	returnStatus = bind(serverSocket, (struct sockaddr *)&sockAddrServer, sizeof(sockAddrServer));
 
 	if (returnStatus == 0)
 	{
@@ -73,17 +73,17 @@ int main(int argc, char const *argv[])
 	else
 	{
 		fprintf(stderr, "Impossibile eseguire il Bind sull'indirizzo\n");
-		close(simpleSocket);
+		close(serverSocket);
 		exit(1);
 	}
 
 	/* lets listen on the socket for connections      */
-	returnStatus = listen(simpleSocket, 5);
+	returnStatus = listen(serverSocket, 5);
 
 	if (returnStatus == -1)
 	{
 		fprintf(stderr, "Impossibile ascoltare sul socket\n");
-		close(simpleSocket);
+		close(serverSocket);
 		exit(1);
 	}
 
@@ -96,13 +96,13 @@ int main(int argc, char const *argv[])
 
 		/* Attesa connessioni */
 
-		simpleChildSocket = accept(simpleSocket, (struct sockaddr *)&clientName, &clientNameLength);
+		simpleChildSocket = accept(serverSocket, (struct sockaddr *)&clientName, &clientNameLength);
 
 		if (simpleChildSocket == -1)
 		{
 
 			fprintf(stderr, "Impossibile accettare connessioni\n");
-			close(simpleSocket);
+			close(serverSocket);
 			exit(1);
 		}
 
@@ -211,7 +211,7 @@ int main(int argc, char const *argv[])
 		close(simpleChildSocket);
 	}
 
-	close(simpleSocket);
+	close(serverSocket);
 	return 0;
 }
 

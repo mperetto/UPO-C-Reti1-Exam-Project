@@ -44,11 +44,11 @@ int strEqual(char *str1, char *str2, int nChar);
 int main(int argc, char *argv[])
 {
 
-	int simpleSocket = 0;
-	int simplePort = 0;
+	int clientSocket = 0;
+	int socketPort = 0;
 	int returnStatus = 0;
 	char buffer[512] = "";
-	struct sockaddr_in simpleServer;
+	struct sockaddr_in sockAddrServer;
 
 	if (3 != argc)
 	{
@@ -58,38 +58,38 @@ int main(int argc, char *argv[])
 	}
 
 	/* create a streaming socket      */
-	simpleSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+	clientSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 
-	if (simpleSocket == -1)
+	if (clientSocket == -1)
 	{
 		fprintf(stderr, "Errore non posso creare il Socket\n");
 		exit(1);
 	}
 
 	/* retrieve the port number for connecting */
-	simplePort = atoi(argv[2]);
+	socketPort = atoi(argv[2]);
 
 	/* setup the address structure */
 	/* use the IP address sent as an argument for the server address  */
-	bzero(&simpleServer, sizeof(simpleServer));
-	simpleServer.sin_family = AF_INET;
-	//inet_addr(argv[2], &simpleServer.sin_addr.s_addr);
-	simpleServer.sin_addr.s_addr = inet_addr(argv[1]);
-	simpleServer.sin_port = htons(simplePort);
+	bzero(&sockAddrServer, sizeof(sockAddrServer));
+	sockAddrServer.sin_family = AF_INET;
+	//inet_addr(argv[2], &sockAddrServer.sin_addr.s_addr);
+	sockAddrServer.sin_addr.s_addr = inet_addr(argv[1]);
+	sockAddrServer.sin_port = htons(socketPort);
 
 	/*  connect to the address and port with our socket  */
-	returnStatus = connect(simpleSocket, (struct sockaddr *)&simpleServer, sizeof(simpleServer));
+	returnStatus = connect(clientSocket, (struct sockaddr *)&sockAddrServer, sizeof(sockAddrServer));
 
 	if (returnStatus != 0)
 	{
 		fprintf(stderr, "Impossibile connettersi all'indirizzo\n");
-		close(simpleSocket);
+		close(clientSocket);
 		exit(1);
 	}
 
 	/* get the message from the server   */
 	memset(buffer, '\0', sizeof(buffer));
-	returnStatus = read(simpleSocket, buffer, sizeof(buffer));
+	returnStatus = read(clientSocket, buffer, sizeof(buffer));
 
 	char server_msg[512] = "";
 	int messageType;
@@ -136,9 +136,9 @@ int main(int argc, char *argv[])
 					}
 					strcat(buffer, "\n");
 
-					write(simpleSocket, buffer, sizeof(buffer));//invio numeri al server
+					write(clientSocket, buffer, sizeof(buffer));//invio numeri al server
 					memset(buffer, 0, sizeof(buffer));
-					returnStatus = read(simpleSocket, buffer, sizeof(buffer));//leggo risposta dal server
+					returnStatus = read(clientSocket, buffer, sizeof(buffer));//leggo risposta dal server
 					messageType = decodeServerMsg(buffer, server_msg);
 					int numRicDalServer = atoi(server_msg);
 					
@@ -150,13 +150,13 @@ int main(int argc, char *argv[])
 					else if(messageType > 3 && messageType <= 6){//Ricevuto messaggio di errore dal server
 						printf("Ops il server ha avuto un errore e ha terminato la connessione\n");
 						printf("Messaggio ricevuto dal server: %s\n", server_msg);
-						close(simpleSocket);
+						close(clientSocket);
 						exit(1);
 					}
 					else if(messageType < 0){
 						printf("Ops non sono in grado di interpretare la risposta del server.\n");
 						printf("Verra' interrotta la connessione e chiuso il programma.\n");
-						close(simpleSocket);
+						close(clientSocket);
 						exit(1);
 					}
 				}
@@ -164,9 +164,9 @@ int main(int argc, char *argv[])
 			}while(numDaInserire != 0);
 			
 			strcat(buffer, "\n");
-			write(simpleSocket, buffer, sizeof(buffer));//invio al server 0
+			write(clientSocket, buffer, sizeof(buffer));//invio al server 0
 			memset(buffer, 0, sizeof(buffer));
-			returnStatus = read(simpleSocket, buffer, sizeof(buffer));
+			returnStatus = read(clientSocket, buffer, sizeof(buffer));
 
 			messageType = decodeServerMsg(buffer, server_msg);
 			if(messageType == 3){//Ricevuto OK STATS
@@ -197,7 +197,7 @@ int main(int argc, char *argv[])
 		fprintf(stderr, "Return Status = %d \n", returnStatus);
 	}
 
-	close(simpleSocket);
+	close(clientSocket);
 	return 0;
 }
 
