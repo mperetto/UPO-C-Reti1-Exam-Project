@@ -12,7 +12,7 @@
  * Decodifica il messaggio inviato dal server, 
  * restituendo il tipo e eventualmente il messaggio personalizzato dal server.
  * 
- * @param		serverMsg					:	messaggio inviato dal server con delimitatori del protocollo.
+ * @param		serverMsg			:	messaggio inviato dal server con delimitatori del protocollo.
  * @param		serverResponse		:	stringa personalizzata dal server (senza delimitatori del protocollo).
  * @return	tipologia di messaggio interpretato.
  * 			1:	OK START
