@@ -98,7 +98,6 @@ int main(int argc, char *argv[])
 
 	if (returnStatus > 0)
 	{
-		int esci = 0;
 		
 		messageType = decodeServerMsg(buffer, server_msg);
 		if(messageType == 1){// ricevuto OK START
@@ -120,8 +119,14 @@ int main(int argc, char *argv[])
 
 				int i;
 				for(i = 0; i < numDaInserire; i++){
-					printf("Inserire valore %d: ", i+1);
-					scanf("%d", &valore);
+					do{
+						printf("Inserire valore %d: ", i+1);
+						scanf("%d", &valore);
+						if(valore < 0){
+							printf("\t> ERR > Puoi inserire solo numeri positivi\n");
+						}
+					}while(valore < 0);
+					
 					upo_list_add(lista, valore);
 				}
 
