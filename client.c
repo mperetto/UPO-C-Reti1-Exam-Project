@@ -8,12 +8,6 @@
 #include <arpa/inet.h>
 #include "list-lib/list.h"
 
-/*
-	Server riferimento prof
-	IP:		130.192.9.131
-	porta:	10010
-*/
-
 /**
  * Decodifica il messaggio inviato dal server, 
  * restituendo il tipo e eventualmente il messaggio personalizzato dal server.
