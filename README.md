@@ -13,13 +13,16 @@ Server receive the values and send the results
 
 #### How to compile
 
+```bash
 gcc -o server server.c
 gcc -o client client.c ./list-lib/list.c
+```
 
 #### How to use
 
-./server <port-number>
-./client <server-ip> <port-number>
-
+```bash
+./server &lt;port-number&gt;
+./client &lt;server-ip&gt; &lt;port-number&gt;
+```
 
 See more in Relazione.pdf file
