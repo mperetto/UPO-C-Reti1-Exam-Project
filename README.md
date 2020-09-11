@@ -21,8 +21,8 @@ gcc -o client client.c ./list-lib/list.c
 #### How to use
 
 ```bash
-./server &lt;port-number&gt;
-./client &lt;server-ip&gt; &lt;port-number&gt;
+./server \[port-number\]
+./client \[server-ip\] \[port-number\]
 ```
 
 See more in Relazione.pdf file
